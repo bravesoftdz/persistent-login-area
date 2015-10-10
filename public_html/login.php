@@ -6,7 +6,8 @@
 	session_start();
 	$ERROR = isset($_REQUEST['err']) ? Members::GetStringError($_REQUEST['err']) : false;
 
-	$u = isset($_REQUEST['username']) ? $_REQUEST['username'] : '';
+	$u = isset($_REQUEST['username']) ? $_REQUEST['username'] : isset($_COOKIE['username']) ? $_COOKIE['username'] : '';
+
 	$p = isset($_REQUEST['password']) ? $_REQUEST['password'] : '';
 
 	//if already authenticated 
@@ -17,9 +18,13 @@
 
 	
 	if (isset($_POST['username'])){
+
 		if (\db::checkLogin($_POST['username'], $_POST['password'])){
 			$_SESSION['authenticated'] = 1;
 			$_SESSION['username'] = $_POST['username'];
+
+			Members::FormAcceptRememberMe($_POST);
+
 			header('Location: members.php');
 			exit;
 		}else{
@@ -51,7 +56,7 @@
 		    <div class="center-block">
 			<h2>Login</h2>
 		    <?php 
-		    	Login::Form($u, $p);
+		    	Login::Form($u, $p, !empty($_REQUEST['remember_me']) || !empty($_COOKIE['username']));
 		    ?>
 		    </div>
 	    </div>

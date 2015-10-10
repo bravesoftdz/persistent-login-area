@@ -31,6 +31,12 @@ class Members {
 	            <span class="icon-bar"></span>
 	          </button>
 	          <a class="navbar-brand" href="#">Members Only Area</a>
+	          <form class="frmRememberMe navbar-form navbar-left">
+	          <label><input type="checkbox" id="cbxRememberMe" name="remember_me" value="1" <?php if (!empty($_COOKIE['username'])){
+	          	?>checked<?php 
+	          } ?>>Remember <?=isset($_COOKIE['username']) ? $_COOKIE['username'] : 'me'?></label>
+	          </form>
+	          
 	        </div>
 	        <div id="navbar" class="navbar-collapse collapse">
 	          <ul class="nav navbar-nav">
@@ -60,6 +66,34 @@ class Members {
 	}
 
 	public static function Head(){
-		?><link rel="stylesheet" type="text/css" href="css/members.css" /><?php 
+		?><link rel="stylesheet" type="text/css" href="css/members.css" />
+		<script src="js/members.js"></script><?php 
+	}
+
+	public static function FormAcceptRememberMe($F = null){
+		if (is_null($F)){ $F = $_POST; }
+		if (!empty($F['remember_me'])){
+			setcookie("username",self::Username(),time()+60*60*24*30); //30 days
+			return 1;
+		}else{
+			setcookie("username","", time() - 24*3600*10); //delete cookie
+			return 0;
+		}
+	}
+
+	public static function SessionStart(){
+		session_start();
+	}
+
+	public static function IsAuthenticated(){
+		if (!empty($_SESSION['authenticated'])){
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	public static function Username(){
+		return $_SESSION['username'];
 	}
 }
